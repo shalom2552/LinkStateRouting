@@ -21,7 +21,9 @@ public class Pair<K, V> implements Serializable {
         this.value = value;
     }
 
-    public void setKey(K key){ this.key = key; }
+    public void setKey(K key){
+        this.key = key;
+    }
 
     @Override
     public String toString() {

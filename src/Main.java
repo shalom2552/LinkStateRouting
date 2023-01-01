@@ -2,14 +2,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-public class main {
+public class Main {
     public static void main(String[] args) throws FileNotFoundException {
-        String[] paths = {"input1.txt", "input2.txt"}; //enter the path to the files you want to run here.
+        String[] paths = {"src/input_1.txt", "src/input_2.txt"}; //enter the path to the files you want to run here.
         for(String path: paths) {
             ExManager m = new ExManager(path);
             m.read_txt();
 
-            int num_of_nodes = m.getNum_of_nodes();
+            int num_of_nodes = m.get_num_of_nodes();
 
             Scanner scanner = new Scanner(new File(path));
             while(scanner.hasNextLine()){
