@@ -69,6 +69,7 @@ public class ExManager {
 //
 
             // add the node to the nodes list
+            System.out.println(Arrays.deepToString(node.getNeighbours_matrix()));
             this.nodes.put(node_id, node);
         }
 

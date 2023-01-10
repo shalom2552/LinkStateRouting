@@ -10,7 +10,7 @@ public class Pair<K, V> implements Serializable {
     }
 
     public K getKey() {
-        return key;
+        return this.key;
     }
 
     public V getValue() {
