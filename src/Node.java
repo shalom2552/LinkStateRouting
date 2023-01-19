@@ -1,7 +1,10 @@
+import java.io.*;
+import java.net.*;
 import java.util.*;
 
 public class Node implements Runnable {
     private final int id;
+    private ServerSocket socket;
     //    private int num_of_nodes; // todo check
     private ArrayList<Pair<Integer, Pair<Double, ArrayList<Integer>>>> neighbours;
     private Double[][] neighbours_matrix;
@@ -20,6 +23,39 @@ public class Node implements Runnable {
 
     @Override
     public void run() {  // TODO implement LinkStateRouting algorithm
+//        Pair<Integer, Pair<Double, ArrayList<Integer>>> neighbour1 = this.neighbours.get(0);
+//        ArrayList<Integer> ports = neighbour1.getValue().getValue();
+//
+//        // TODO Start experimental
+//        int port = ports.get(0);
+//        try (ServerSocket ss = new ServerSocket(port)) {
+//            System.out.println("Started server on port " + port);
+//            socket = new ServerSocket(ServerSocket(port));
+//            Socket clientSocket = ss.accept();
+//            System.out.println("User connected successfully!");
+//            DataInputStream in = new DataInputStream(clientSocket.getInputStream());
+//            DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
+//            //in.readByte();
+//            String x =in.readUTF();
+//            if (x == null) {
+//                System.err.println("Error: Empty packet");
+//                return;
+//            }
+//            String send = "Hello";
+//            out.writeByte(1);
+//            out.writeUTF(send);
+//            out.flush();
+//            out.close();
+//
+//
+//            System.out.println("Message: " + x);
+//            in.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
+        // TODO End experimental
+
 
         // TODO 1 define the sockets for each neighbour of this.node
 
@@ -46,6 +82,13 @@ public class Node implements Runnable {
 //        }
     }
 
+    public void sendToAllNeighbours() {
+
+    }
+
+    /**
+     * updates the weight of a giving neighbour id
+     */
     public void updateNeighbour(int id, Double weight) {
         for (Pair<Integer, Pair<Double, ArrayList<Integer>>> node : this.neighbours) {
             if (node.getKey().equals(id)) {
@@ -58,6 +101,9 @@ public class Node implements Runnable {
         }
     }
 
+    /**
+     * returns the neighbours matrix of this node
+     */
     public Double[][] getNeighbours_matrix() {
         for (Pair<Integer, Pair<Double, ArrayList<Integer>>> neighbour : this.neighbours) {
             Double weight = neighbour.getValue().getKey();
@@ -66,15 +112,21 @@ public class Node implements Runnable {
         return neighbours_matrix;
     }
 
+    /**
+     * add a neighbour to the node neighbour list
+     */
     public void add_neighbour(Integer node_id, Double weight, int port1, int port2) {
-        // neighbour = Pair<Integer, Pair<Double, ArrayList<Integer>>>;
         ArrayList<Integer> ports = new ArrayList<>(2);
-        ports.add(port1); ports.add(port2);
+        ports.add(port1);
+        ports.add(port2);
         Pair<Double, ArrayList<Integer>> data = new Pair<>(weight, ports);
         // add to adjacency list
         this.neighbours.add(new Pair<>(node_id, data));
     }
 
+    /**
+     * prints the neighbours matrix of this node
+     */
     public void print_graph() {
         System.out.println("Neighbours Matrix for node id: " + this.id);
         for (Double[] neighboursMatrix : neighbours_matrix) {

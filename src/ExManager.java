@@ -1,3 +1,5 @@
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.*;
 import java.io.*;
 
@@ -6,6 +8,7 @@ public class ExManager {
     private String path;
     private int num_of_nodes;
     private Hashtable<Integer, Node> nodes;
+    private ArrayList<Thread> activeNodes;
 
     public ExManager(String path) {
         this.path = path;
@@ -72,8 +75,19 @@ public class ExManager {
 
     public void start() {
         // your code here TODO
+        Enumeration<Integer> e = this.nodes.keys();
+        while (e.hasMoreElements()) {
+            int key = e.nextElement();
+            Node node = this.nodes.get(key);
+            Thread t = new Thread(node);
+            t.start();
+//            this.activeNodes.add(t);  // TODO
+        }
 
-        // TODO run the linkStateRouting for all nodes in the graph
+//        this.terminate();
+
+
+            // TODO run the linkStateRouting for all nodes in the graph
 
         //
 
@@ -89,8 +103,10 @@ public class ExManager {
     }
 
     public void terminate() {
-        // your code here
-        // todo go over all nodes threads and terminate them
+        for (Thread t: this.activeNodes) {
+            // TODO stop thread t
+            this.activeNodes.remove(t);
+        }
 
     }
 }
