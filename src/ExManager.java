@@ -13,6 +13,7 @@ public class ExManager {
     public ExManager(String path) {
         this.path = path;
         this.nodes = new Hashtable<>();
+        this.activeNodes = new ArrayList<>();
     }
 
     public Node get_node(int id) {
@@ -68,20 +69,21 @@ public class ExManager {
                 node.add_neighbour(neighbour_id, weight, port1, port2);
             }
 
+            node.getNeighbours_matrix();
             // add the node to the nodes list
             this.nodes.put(node_id, node);
         }
     }
 
-    public void start() {
-        // your code here TODO
+    public void start(){
         Enumeration<Integer> e = this.nodes.keys();
         while (e.hasMoreElements()) {
             int key = e.nextElement();
             Node node = this.nodes.get(key);
             Thread t = new Thread(node);
             t.start();
-//            this.activeNodes.add(t);  // TODO
+//            System.out.println("Started Thread " +t.getId() +" successfully Started!");  // todo
+            this.activeNodes.add(t);
         }
 
 //        this.terminate();
@@ -99,14 +101,20 @@ public class ExManager {
 //            int key = e.nextElement();
 //            System.out.println("node :" + this.nodes.get(key).getId());
 //        }
-        // TODO if there is no change in the matrix then terminate()
+//        // TODO if there is no change in the matrix then terminate()
+//        for (Thread t: this.activeNodes){
+//            System.out.println(t.getId() + "Joined");
+//            t.();
+//        }
+        terminate();
     }
 
     public void terminate() {
-        for (Thread t: this.activeNodes) {
-            // TODO stop thread t
-            this.activeNodes.remove(t);
+        System.out.println("========================================="); // todo
+        // TODO check why it never stops
+        for (Thread t : this.activeNodes) {
+            t.interrupt();
+//            System.out.println("Stopped Thread " + t.getId() + " successfully Stopped!");  // todo debug
         }
-
     }
 }
