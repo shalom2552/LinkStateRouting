@@ -3,8 +3,8 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws FileNotFoundException, InterruptedException {
-        String[] paths = {"src/input_1.txt"};  //, "src/input_2.txt"}; //enter the path to the files you want to run here.
+    public static void main(String[] args) throws FileNotFoundException {
+        String[] paths = {"src/input_1.txt", "src/input_2.txt", "src/input_3.txt", "src/input_4.txt","src/input_5.txt"};
         for(String path: paths) {
             ExManager m = new ExManager(path);
             m.read_txt();

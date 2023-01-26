@@ -5,10 +5,17 @@ public class MessagesQueue {
 
     private Map<Integer, Map<Integer, Double>> queue = new HashMap<>();
 
+    /**
+     * @param message
+     */
     public synchronized void addMessage(Message message) {
         queue.put(message.getSenderId(), message.getWeightVector());
     }
 
+    /**
+     * @param message
+     * @return
+     */
     public synchronized boolean notReceived(Message message) {
         return !queue.containsKey(message.getSenderId());
     }
