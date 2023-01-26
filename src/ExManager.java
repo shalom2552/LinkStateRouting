@@ -1,30 +1,33 @@
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.*;
 import java.io.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 public class ExManager {
     private String path;
     private int num_of_nodes;
-    private Hashtable<Integer, Node> nodes;
-    private ArrayList<Thread> activeNodes;
+    private ArrayList<Node> nodes;
+    protected ArrayList<Integer> doneNodes;
 
     public ExManager(String path) {
         this.path = path;
-        this.nodes = new Hashtable<>();
-        this.activeNodes = new ArrayList<>();
+        this.nodes = new ArrayList<>();
+        this.doneNodes = new ArrayList<>();
     }
 
     public Node get_node(int id) {
-        Enumeration<Integer> e = this.nodes.keys();
-        while (e.hasMoreElements()) {
-            int key = e.nextElement();
-            if (this.nodes.get(key).getId() == id) {
-                return this.nodes.get(key);
-            }
-        }
-        return null;
+//        Enumeration<Integer> e = this.nodes.keys();
+//        while (e.hasMoreElements()) {
+//            int key = e.nextElement();
+//            if (this.nodes.get(key).getId() == id) {
+//                return this.nodes.get(key);
+//            }
+//        }
+//        return null;
+        return this.nodes.get(id - 1);
     }
 
     public int get_num_of_nodes() {
@@ -60,61 +63,61 @@ public class ExManager {
 
             // for each node build its adjacency matrix
             int node_id = Integer.parseInt(data[0]);
-            Node node = new Node(node_id, this.num_of_nodes);
+            Node node = new Node(node_id, this.num_of_nodes, this.doneNodes);
             for (int i = 1; i < data.length; i += 4) {
                 int neighbour_id = Integer.parseInt(data[i]);
                 Double weight = Double.parseDouble(data[i + 1]);
                 int port1 = Integer.parseInt(data[i + 2]);
                 int port2 = Integer.parseInt(data[i + 3]);
-                node.add_neighbour(neighbour_id, weight, port1, port2);
+                node.addNeighbour(neighbour_id, weight, port1, port2);
             }
 
-            node.getNeighbours_matrix();
+            node.getNeighboursMatrix();
             // add the node to the nodes list
-            this.nodes.put(node_id, node);
+            this.nodes.add(node);
         }
     }
 
-    public void start(){
-        Enumeration<Integer> e = this.nodes.keys();
-        while (e.hasMoreElements()) {
-            int key = e.nextElement();
-            Node node = this.nodes.get(key);
-            Thread t = new Thread(node);
-            t.start();
-//            System.out.println("Started Thread " +t.getId() +" successfully Started!");  // todo
-            this.activeNodes.add(t);
+    public void start() {
+        List<Callable<Void>> callables = new ArrayList<>();
+        for (Runnable r : this.nodes)
+            callables.add(toCallable(r));
+        ExecutorService executorService = Executors.newFixedThreadPool(100);
+        ExecutorService(callables, executorService);
+    }
+
+    static void ExecutorService(List<Callable<Void>> callables, ExecutorService executorService) {
+        try {
+            executorService.invokeAll(callables);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
-//        this.terminate();
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(2, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException ex) {
+            executorService.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+    }
 
-
-            // TODO run the linkStateRouting for all nodes in the graph
-
-        //
-
-//        System.out.println(get_node(1).get_neighbours());  // TODO
-
-//        Enumeration<Integer> e = this.nodes.keys();
-//
-//        while (e.hasMoreElements()) {
-//            int key = e.nextElement();
-//            System.out.println("node :" + this.nodes.get(key).getId());
-//        }
-//        // TODO if there is no change in the matrix then terminate()
-//        for (Thread t: this.activeNodes){
-//            System.out.println(t.getId() + "Joined");
-//            t.();
-//        }
-        terminate();
+    private Callable<Void> toCallable(final Runnable runnable) {
+        return new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                runnable.run();
+                return null;
+            }
+        };
     }
 
     public void terminate() {
-        System.out.println("========================================="); // todo
-        // TODO check why it never stops
-        for (Thread t : this.activeNodes) {
-            t.interrupt();
-//            System.out.println("Stopped Thread " + t.getId() + " successfully Stopped!");  // todo debug
-        }
+//        for (Thread t : this.activeNodes) {
+//            t.interrupt();
+//        }
+        return;
     }
 }
